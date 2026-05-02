@@ -1,0 +1,60 @@
+@model AnyStateClaimsPortal.Web.Models.ClaimSearchViewModel
+@{ ViewBag.Title = "Claims"; }
+
+<h2>Claims</h2>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        @using (Html.BeginForm("Index", "Claims", FormMethod.Get, new { @class = "form-inline" }))
+        {
+            @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control", placeholder = "Search..." })
+            @Html.DropDownListFor(m => m.Status, Model.Statuses, "All Statuses...", new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.AgencyId, Model.Agencies, "All Agencies...", new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.InjuryType, Model.InjuryTypes, "All Injury Types...", new { @class = "form-control" })
+            @Html.DropDownListFor(m => m.Priority, Model.Priorities, "All Priorities...", new { @class = "form-control" })
+            <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> Search</button>
+            @Html.ActionLink("New Claim", "Create", null, new { @class = "btn btn-success" })
+        }
+    </div>
+</div>
+
+@if (Model.Results != null)
+{
+    if (Model.Results.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Claim #</th><th>Employee</th><th>Agency</th><th>Injury Date</th>
+                        <th>Type</th><th>Priority</th><th>Status</th><th>Weekly Benefit</th>
+                        <th>Total Paid</th><th>Total Medical</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Results)
+                    {
+                        <tr>
+                            <td>@Html.ActionLink(item.ClaimNumber, "Details", new { id = item.ClaimId })</td>
+                            <td>@item.EmployeeName</td>
+                            <td>@item.AgencyName</td>
+                            <td>@item.InjuryDate.ToString("MM/dd/yyyy")</td>
+                            <td>@item.InjuryType</td>
+                            <td><span class="label label-@(item.Priority == "High" ? "danger" : item.Priority == "Medium" ? "warning" : "default")">@item.Priority</span></td>
+                            <td><span class="label label-@(item.Status == "Approved" ? "success" : item.Status == "Denied" ? "danger" : item.Status == "Under Review" ? "warning" : "info")">@item.Status</span></td>
+                            <td>@(item.WeeklyBenefitAmount?.ToString("C") ?? "—")</td>
+                            <td>@(item.TotalPaidAmount?.ToString("C") ?? "—")</td>
+                            <td>@(item.TotalMedicalCost?.ToString("C") ?? "—")</td>
+                            <td>@Html.ActionLink("Edit", "Edit", new { id = item.ClaimId }, new { @class = "btn btn-xs btn-default" })</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted">Showing @Model.Results.Count of @Model.TotalCount claim(s).</p>
+    }
+    else
+    {
+        <div class="alert alert-info">No claims found matching your criteria.</div>
+    }
+}

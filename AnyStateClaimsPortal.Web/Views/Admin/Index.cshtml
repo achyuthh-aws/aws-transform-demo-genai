@@ -1,0 +1,76 @@
+@model AnyStateClaimsPortal.Web.Models.AdminDashboardViewModel
+@{ ViewBag.Title = "Administration"; }
+
+<h2>Administration</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Total Users</div>
+            <div class="panel-body text-center"><h3>@Model.TotalUsers</h3></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-success">
+            <div class="panel-heading">Active</div>
+            <div class="panel-body text-center"><h3>@Model.ActiveUsers</h3></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-danger">
+            <div class="panel-heading">Locked</div>
+            <div class="panel-body text-center"><h3>@Model.LockedUsers</h3></div>
+        </div>
+    </div>
+</div>
+
+<h3>Users</h3>
+<table class="table table-striped table-bordered table-condensed">
+    <thead>
+        <tr>
+            <th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Agency</th>
+            <th>Active</th><th>Locked</th><th>Last Login</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model.Users)
+        {
+            <tr>
+                <td>@u.Username</td>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.Role</td>
+                <td>@u.AgencyName</td>
+                <td class="text-center">@(u.IsActive ? Html.Raw("<span class='glyphicon glyphicon-ok text-success'></span>") : Html.Raw(""))</td>
+                <td class="text-center">@(u.IsLocked ? Html.Raw("<span class='glyphicon glyphicon-warning-sign text-danger'></span>") : Html.Raw(""))</td>
+                <td>@(u.LastLoginDate.HasValue ? u.LastLoginDate.Value.ToString("MM/dd/yyyy HH:mm") : "Never")</td>
+                <td>
+                    <a href="@Url.Action("ToggleLock", new { id = u.UserId })" class="btn btn-xs @(u.IsLocked ? "btn-success" : "btn-warning")">
+                        @(u.IsLocked ? "Unlock" : "Lock")
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Recent Audit Log</h3>
+<table class="table table-striped table-bordered table-condensed">
+    <thead>
+        <tr><th>Date</th><th>Table</th><th>Action</th><th>Field</th><th>Old Value</th><th>New Value</th><th>Changed By</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model.RecentAudit)
+        {
+            <tr>
+                <td>@a.ChangedDate.ToString("MM/dd/yyyy HH:mm")</td>
+                <td>@a.TableName</td>
+                <td>@a.Action</td>
+                <td>@a.FieldName</td>
+                <td>@a.OldValue</td>
+                <td>@a.NewValue</td>
+                <td>@a.ChangedBy</td>
+            </tr>
+        }
+    </tbody>
+</table>

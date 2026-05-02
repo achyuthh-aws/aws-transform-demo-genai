@@ -1,0 +1,15 @@
+@if (Session["UserFullName"] != null)
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li><p class="navbar-text">
+            <span class="glyphicon glyphicon-user"></span> @Session["UserFullName"] (@Session["UserRole"])
+        </p></li>
+        <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+    </ul>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Login", "Login", "Account")</li>
+    </ul>
+}

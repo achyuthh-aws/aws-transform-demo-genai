@@ -1,0 +1,104 @@
+@model AnyStateClaimsPortal.Web.Models.ReportViewModel
+@{ ViewBag.Title = "Reports"; }
+
+<h2>Reports</h2>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><strong>Filters</strong></div>
+    <div class="panel-body">
+        @using (Html.BeginForm("Index", "Reports", FormMethod.Get, new { @class = "form-inline" }))
+        {
+            <div class="form-group">
+                <label>Fiscal Year</label>
+                @Html.DropDownList("FiscalYear", Model.FiscalYears, "-- All --", new { @class = "form-control" })
+            </div>
+            <div class="form-group" style="margin-left:15px;">
+                <label>Agency</label>
+                @Html.DropDownList("SelectedAgencyId", Model.Agencies, "-- All --", new { @class = "form-control" })
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-left:15px;">
+                <span class="glyphicon glyphicon-search"></span> Submit
+            </button>
+        }
+    </div>
+</div>
+
+<h3>Agency Claims Report</h3>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Agency Code</th><th>Agency Name</th><th>Risk Category</th><th>Total Claims</th>
+                <th>Submitted</th><th>Under Review</th><th>Approved</th><th>Denied</th>
+                <th>Closed</th><th>Litigated</th><th>Total Paid</th><th>Total Medical</th>
+                <th>Total Incurred</th><th>Avg Weekly Benefit</th><th>Loss Ratio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.AgencyReports)
+            {
+                <tr>
+                    <td>@r.AgencyCode</td>
+                    <td>@Html.ActionLink(r.AgencyName, "Index", "Reports", new { SelectedAgencyId = r.AgencyId }, null)</td>
+                    <td>@r.RiskCategory</td>
+                    <td>@r.TotalClaims</td>
+                    <td>@r.SubmittedCount</td>
+                    <td>@r.UnderReviewCount</td>
+                    <td>@r.ApprovedCount</td>
+                    <td>@r.DeniedCount</td>
+                    <td>@r.ClosedCount</td>
+                    <td>@r.LitigatedCount</td>
+                    <td>@r.TotalPaidAmount.ToString("C")</td>
+                    <td>@r.TotalMedicalCost.ToString("C")</td>
+                    <td>@r.TotalIncurredCost.ToString("C")</td>
+                    <td>@r.AvgWeeklyBenefit.ToString("C")</td>
+                    <td style="@(r.LossRatio > 100 ? "color:red;font-weight:bold" : "")">@r.LossRatio.ToString("F1")%</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.FinancialSummaries != null && Model.FinancialSummaries.Count > 0)
+{
+    <h3>Financial Summary</h3>
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+            <tr><th>Payment Type</th><th>Count</th><th>Total</th><th>Avg</th><th>Min</th><th>Max</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var f in Model.FinancialSummaries)
+            {
+                <tr>
+                    <td>@f.PaymentType</td>
+                    <td>@f.PaymentCount</td>
+                    <td>@f.TotalAmount.ToString("C")</td>
+                    <td>@f.AvgAmount.ToString("C")</td>
+                    <td>@f.MinAmount.ToString("C")</td>
+                    <td>@f.MaxAmount.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (Model.AgingBuckets != null && Model.AgingBuckets.Count > 0)
+{
+    <h3>Claims Aging</h3>
+    <table class="table table-striped table-bordered table-condensed">
+        <thead>
+            <tr><th>Aging Bucket</th><th>Claim Count</th><th>Total Paid</th><th>Total Reserves</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model.AgingBuckets)
+            {
+                <tr>
+                    <td>@a.AgingBucket</td>
+                    <td>@a.ClaimCount</td>
+                    <td>@a.TotalPaid.ToString("C")</td>
+                    <td>@a.TotalReserves.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

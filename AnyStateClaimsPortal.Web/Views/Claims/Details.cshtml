@@ -1,0 +1,111 @@
+@model AnyStateClaimsPortal.Web.Models.ClaimViewModel
+@{ ViewBag.Title = "Claim " + Model.ClaimNumber; }
+
+<h2>Claim @Model.ClaimNumber</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Claim Details
+                    <span class="label label-@(Model.Status == "Approved" ? "success" : Model.Status == "Denied" ? "danger" : Model.Status == "Under Review" ? "warning" : "info") pull-right">@Model.Status</span>
+                </h3>
+            </div>
+            <table class="table table-condensed">
+                <tr><th>Employee</th><td>@Model.EmployeeName</td></tr>
+                <tr><th>Agency</th><td>@Model.AgencyName</td></tr>
+                <tr><th>Injury Date</th><td>@Model.InjuryDate.ToString("MM/dd/yyyy")</td></tr>
+                <tr><th>Type</th><td>@Model.InjuryType</td></tr>
+                <tr><th>Body Part</th><td>@Model.BodyPartAffected</td></tr>
+                <tr><th>Location</th><td>@Model.IncidentLocation (@Model.LocationType)</td></tr>
+                <tr><th>Description</th><td>@Model.InjuryDescription</td></tr>
+                <tr><th>Witness</th><td>@Model.WitnessName @(Model.WitnessPhone != null ? "(" + Model.WitnessPhone + ")" : "")</td></tr>
+                <tr><th>Adjuster</th><td>@(Model.AdjusterName ?? "Unassigned")</td></tr>
+                <tr><th>Medical Reviewer</th><td>@(Model.MedicalReviewerId.HasValue ? Model.MedicalReviewerId.ToString() : "Unassigned")</td></tr>
+                <tr><th>Weekly Benefit</th><td>@(Model.WeeklyBenefitAmount?.ToString("C") ?? "—")</td></tr>
+                <tr><th>Total Paid</th><td>@(Model.TotalPaidAmount?.ToString("C") ?? "—")</td></tr>
+                <tr><th>Total Medical</th><td>@(Model.TotalMedicalCost?.ToString("C") ?? "—")</td></tr>
+                <tr><th>Total Reserve</th><td>@(Model.TotalReserveAmount?.ToString("C") ?? "—")</td></tr>
+                <tr><th>Litigated</th><td>@(Model.IsLitigated ? "Yes" : "No")</td></tr>
+                <tr><th>Return to Work Date</th><td>@(Model.ReturnToWorkDate?.ToString("MM/dd/yyyy") ?? "—")</td></tr>
+            </table>
+            @if (!string.IsNullOrEmpty(Model.DenialReason))
+            {
+                <div class="panel-footer text-danger"><strong>Denial Reason:</strong> @Model.DenialReason</div>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h3 class="panel-title">Notes</h3></div>
+            <div class="panel-body" style="max-height: 400px; overflow-y: auto;">
+                @if (Model.Notes != null && Model.Notes.Count > 0)
+                {
+                    foreach (var note in Model.Notes)
+                    {
+                        <div class="well well-sm">
+                            <strong>@note.CreatedBy</strong> <small class="text-muted">@note.CreatedDate.ToString("MM/dd/yyyy h:mm tt")</small>
+                            <span class="label label-default">@note.NoteType</span>
+                            @if (note.IsConfidential) { <span class="label label-warning">Confidential</span> }
+                            <p>@note.NoteText</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">No notes yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.Treatments != null)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">Medical Treatments</h3></div>
+        <table class="table table-striped">
+            <thead><tr><th>Date</th><th>Type</th><th>Provider</th><th>Diagnosis</th><th>Billed</th><th>Approved</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var t in (IEnumerable<dynamic>)ViewBag.Treatments)
+                {
+                    <tr>
+                        <td>@t.TreatmentDate.ToString("MM/dd/yyyy")</td><td>@t.TreatmentType</td>
+                        <td>@t.ProviderName</td><td>@t.Diagnosis</td>
+                        <td>@t.BilledAmount.ToString("C")</td><td>@t.ApprovedAmount.ToString("C")</td>
+                        <td><span class="label label-@(t.Status == "Approved" ? "success" : "default")">@t.Status</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (ViewBag.Payments != null)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">Payments</h3></div>
+        <table class="table table-striped">
+            <thead><tr><th>Date</th><th>Type</th><th>Payee</th><th>Amount</th><th>Check #</th><th>Status</th></tr></thead>
+            <tbody>
+                @foreach (var p in (IEnumerable<dynamic>)ViewBag.Payments)
+                {
+                    <tr>
+                        <td>@p.PaymentDate.ToString("MM/dd/yyyy")</td><td>@p.PaymentType</td>
+                        <td>@p.PayeeName</td><td>@p.Amount.ToString("C")</td>
+                        <td>@p.CheckNumber</td>
+                        <td><span class="label label-@(p.Status == "Cleared" ? "success" : "default")">@p.Status</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<div class="form-group">
+    @Html.ActionLink("Edit Claim", "Edit", new { id = Model.ClaimId }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Add Payment", "Create", "Payments", new { claimId = Model.ClaimId }, new { @class = "btn btn-default" })
+    @Html.ActionLink("Add Treatment", "AddTreatment", "Medical", new { claimId = Model.ClaimId }, new { @class = "btn btn-default" })
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default" })
+</div>

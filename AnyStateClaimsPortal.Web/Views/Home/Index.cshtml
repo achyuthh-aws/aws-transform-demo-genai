@@ -1,0 +1,122 @@
+@model AnyStateClaimsPortal.Web.Models.DashboardViewModel
+@{ ViewBag.Title = "Dashboard"; }
+
+<h2><span class="glyphicon glyphicon-dashboard"></span> Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-info">
+            <div class="panel-heading"><h4>Total Claims</h4></div>
+            <div class="panel-body"><h3>@Model.TotalClaims</h3></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-success">
+            <div class="panel-heading"><h4>Total Paid</h4></div>
+            <div class="panel-body"><h3>@Model.TotalPaid.ToString("C")</h3></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-warning">
+            <div class="panel-heading"><h4>Total Reserves</h4></div>
+            <div class="panel-body"><h3>@Model.TotalReserves.ToString("C")</h3></div>
+        </div>
+    </div>
+</div>
+
+@if (Model.StatusSummaries != null && Model.StatusSummaries.Count > 0)
+{
+    <div class="row">
+        @foreach (var s in Model.StatusSummaries)
+        {
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong>@s.Status</strong></div>
+                    <div class="panel-body">
+                        <p>Claims: @s.ClaimCount</p>
+                        <p>Paid: @s.TotalPaid.ToString("C")</p>
+                        <p>Reserves: @s.TotalReserves.ToString("C")</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<h3>Recent Claims</h3>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Claim #</th><th>Employee</th><th>Agency</th><th>Injury Date</th>
+                <th>Type</th><th>Priority</th><th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.RecentClaims != null)
+            {
+                foreach (var c in Model.RecentClaims)
+                {
+                    <tr>
+                        <td><a href="@Url.Action("Details", "Claims", new { id = c.ClaimId })">@c.ClaimNumber</a></td>
+                        <td>@c.EmployeeName</td>
+                        <td>@c.AgencyName</td>
+                        <td>@c.InjuryDate.ToString("MM/dd/yyyy")</td>
+                        <td>@c.InjuryType</td>
+                        <td>@c.Priority</td>
+                        <td>
+                            @{ var labelClass = c.Status == "Open" ? "label-warning" : c.Status == "Closed" ? "label-success" : c.Status == "Denied" ? "label-danger" : "label-info"; }
+                            <span class="label @labelClass">@c.Status</span>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<h3>Claims by Agency</h3>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Agency Code</th><th>Agency Name</th><th>Risk Category</th>
+                <th>Claims</th><th>Total Paid</th><th>Total Medical</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.AgencySummaries != null)
+            {
+                foreach (var a in Model.AgencySummaries)
+                {
+                    <tr>
+                        <td>@a.AgencyCode</td>
+                        <td>@a.AgencyName</td>
+                        <td>@a.RiskCategory</td>
+                        <td>@a.ClaimCount</td>
+                        <td>@a.TotalPaid.ToString("C")</td>
+                        <td>@a.TotalMedical.ToString("C")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.MonthlyTrends != null && Model.MonthlyTrends.Count > 0)
+{
+    <h3>Monthly Trend</h3>
+    <table class="table table-condensed">
+        <thead><tr><th>Month</th><th>Claims</th><th>Total Paid</th></tr></thead>
+        <tbody>
+            @foreach (var t in Model.MonthlyTrends)
+            {
+                <tr>
+                    <td>@(new DateTime(t.Year, t.Month, 1).ToString("MMM yyyy"))</td>
+                    <td>@t.ClaimCount</td>
+                    <td>@t.TotalPaid.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

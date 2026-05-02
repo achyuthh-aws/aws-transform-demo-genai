@@ -1,0 +1,15 @@
+bin/
+obj/
+packages/
+*.user
+*.suo
+*.cache
+*.dll
+*.pdb
+*.exe
+*.nupkg
+.vs/
+_ReSharper*/
+TestResult.xml
+*.DotSettings.user
+.DS_Store
