@@ -77,7 +77,7 @@ namespace AnyStateClaimsPortal.Web.Models.Entities
         public DateTime? ModifiedDate { get; set; }
 
         [NotMapped]
-        public string FullName => $"{FirstName} {LastName}";
+        public string FullName { get { return FirstName + " " + LastName; } }
 
         public virtual Agency Agency { get; set; }
 

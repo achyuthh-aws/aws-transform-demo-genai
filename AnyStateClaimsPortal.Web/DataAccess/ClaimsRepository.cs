@@ -18,7 +18,7 @@ namespace AnyStateClaimsPortal.Web.DataAccess
             _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out int t) ? t : 30;
         }
 
-        public (List<ClaimListItemViewModel> Claims, int TotalCount) SearchClaims(
+        public SearchClaimsResult SearchClaims(
             string searchTerm, string status, int? agencyId, string injuryType,
             string priority, DateTime? dateFrom, DateTime? dateTo,
             int? adjusterId, bool? isLitigated, int pageNumber, int pageSize)
@@ -53,7 +53,10 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                 }
             }
 
-            return (claims, totalCount);
+            var result = new SearchClaimsResult();
+            result.Claims = claims;
+            result.TotalCount = totalCount;
+            return result;
         }
 
         public DashboardViewModel GetDashboardData()
@@ -150,5 +153,11 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                 TotalPaid = reader["TotalPaid"] as decimal? ?? 0m
             };
         }
+    }
+
+    public class SearchClaimsResult
+    {
+        public List<ClaimListItemViewModel> Claims { get; set; }
+        public int TotalCount { get; set; }
     }
 }

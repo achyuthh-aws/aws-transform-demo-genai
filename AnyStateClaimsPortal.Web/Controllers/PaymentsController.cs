@@ -79,7 +79,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
         {
             var repo = new PaymentRepository();
             var result = repo.ProcessPaymentBatch(User.Identity.Name);
-            TempData["Success"] = $"Processed {result.Count} payments totaling {result.Total:C}.";
+            TempData["Success"] = string.Format("Processed {0} payments totaling {1:C}.", result.Count, result.Total);
             return RedirectToAction("Index", "Home");
         }
     }

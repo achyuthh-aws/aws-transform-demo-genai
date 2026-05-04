@@ -46,7 +46,7 @@ namespace AnyStateClaimsPortal.Web.DataAccess
             return payments;
         }
 
-        public (int Count, decimal Total) ProcessPaymentBatch(string approvedBy)
+        public PaymentBatchResult ProcessPaymentBatch(string approvedBy)
         {
             using (var conn = new SqlConnection(_connectionString))
             using (var cmd = new SqlCommand("usp_ProcessPaymentBatch", conn))
@@ -60,8 +60,17 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                 cmd.Parameters.Add(totalParam);
                 conn.Open();
                 cmd.ExecuteNonQuery();
-                return (Convert.ToInt32(countParam.Value), Convert.ToDecimal(totalParam.Value));
+                var result = new PaymentBatchResult();
+                result.Count = Convert.ToInt32(countParam.Value);
+                result.Total = Convert.ToDecimal(totalParam.Value);
+                return result;
             }
         }
+    }
+
+    public class PaymentBatchResult
+    {
+        public int Count { get; set; }
+        public decimal Total { get; set; }
     }
 }

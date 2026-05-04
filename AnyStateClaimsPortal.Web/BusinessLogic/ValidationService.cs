@@ -24,7 +24,7 @@ namespace AnyStateClaimsPortal.Web.BusinessLogic
         {
             var errors = new List<string>();
             if (!_workflow.CanTransition(oldStatus, newStatus))
-                errors.Add($"Cannot transition from '{oldStatus}' to '{newStatus}'.");
+                errors.Add(string.Format("Cannot transition from '{0}' to '{1}'.", oldStatus, newStatus));
             if (_workflow.RequiresDenialReason(newStatus) && string.IsNullOrWhiteSpace(model.DenialReason))
                 errors.Add("A denial reason is required.");
             if (_workflow.RequiresAdjusterAssignment(newStatus) && (model.AdjusterId == null || model.AdjusterId == 0))

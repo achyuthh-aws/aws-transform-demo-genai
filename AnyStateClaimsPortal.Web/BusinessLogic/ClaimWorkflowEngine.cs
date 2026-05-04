@@ -32,16 +32,16 @@ namespace AnyStateClaimsPortal.Web.BusinessLogic
         public string GenerateClaimNumber()
         {
             int seq = Interlocked.Increment(ref _claimSequence);
-            return $"WC-{DateTime.Now.Year}-{seq:D4}";
+            return string.Format("WC-{0}-{1:D4}", DateTime.Now.Year, seq);
         }
 
-        public bool RequiresAdjusterAssignment(string status) => status == "UnderReview";
+        public bool RequiresAdjusterAssignment(string status) { return status == "UnderReview"; }
 
-        public bool RequiresDenialReason(string status) => status == "Denied";
+        public bool RequiresDenialReason(string status) { return status == "Denied"; }
 
-        public bool RequiresMedicalReview(string status) => status == "MedicalReview";
+        public bool RequiresMedicalReview(string status) { return status == "MedicalReview"; }
 
-        public bool IsTerminalStatus(string status) => status == "Closed";
+        public bool IsTerminalStatus(string status) { return status == "Closed"; }
 
         public string GetStatusDisplayClass(string status)
         {
