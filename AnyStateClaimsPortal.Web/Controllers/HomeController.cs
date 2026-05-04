@@ -1,21 +1,28 @@
+using System;
 using System.Web.Mvc;
 using AnyStateClaimsPortal.Web.DataAccess;
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         public ActionResult Index()
         {
-            var repo = new ClaimsRepository();
-            var dashboard = repo.GetDashboardData();
-            return View(dashboard);
+            try
+            {
+                var repo = new ClaimsRepository();
+                var dashboard = repo.GetDashboardData();
+                return View(dashboard);
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
+            }
         }
 
         public ActionResult Error()
         {
-            return View();
+            return Content("Error page reached");
         }
     }
 }
