@@ -38,7 +38,8 @@ namespace AnyStateClaimsPortal.Web.Services
 
         public decimal GetStateAverageWeeklyWage()
         {
-            return decimal.TryParse(ConfigurationManager.AppSettings["StateAvgWeeklyWage"], out decimal wage)
+            decimal wage;
+            return decimal.TryParse(ConfigurationManager.AppSettings["StateAvgWeeklyWage"], out wage)
                 ? wage
                 : 1025.00m;
         }

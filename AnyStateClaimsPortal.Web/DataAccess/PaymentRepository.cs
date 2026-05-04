@@ -15,7 +15,8 @@ namespace AnyStateClaimsPortal.Web.DataAccess
         public PaymentRepository()
         {
             _connectionString = ConfigurationManager.ConnectionStrings["AnyStateClaimsDB"].ConnectionString;
-            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out int t) ? t : 30;
+            int t;
+            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out t) ? t : 30;
         }
 
         public List<PaymentListItem> GetPaymentsByClaimId(int claimId)
@@ -38,7 +39,7 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                             Amount = Convert.ToDecimal(reader["Amount"]),
                             PaymentDate = Convert.ToDateTime(reader["PaymentDate"]),
                             PaymentType = reader["PaymentType"].ToString(),
-                            Status = reader["Status"].ToString()
+                            PaymentStatus = reader["Status"].ToString()
                         });
                 }
             }

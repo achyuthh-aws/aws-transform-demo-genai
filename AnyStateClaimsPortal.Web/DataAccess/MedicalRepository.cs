@@ -15,7 +15,8 @@ namespace AnyStateClaimsPortal.Web.DataAccess
         public MedicalRepository()
         {
             _connectionString = ConfigurationManager.ConnectionStrings["AnyStateClaimsDB"].ConnectionString;
-            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out int t) ? t : 30;
+            int t;
+            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out t) ? t : 30;
         }
 
         public List<TreatmentViewModel> GetTreatmentHistory(int claimId)
@@ -35,11 +36,10 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                         treatments.Add(new TreatmentViewModel
                         {
                             TreatmentId = Convert.ToInt32(reader["TreatmentId"]),
-                            ClaimId = Convert.ToInt32(reader["ClaimId"]),
                             TreatmentDate = Convert.ToDateTime(reader["TreatmentDate"]),
-                            Provider = reader["Provider"].ToString(),
+                            ProviderName = reader["Provider"].ToString(),
                             Description = reader["Description"].ToString(),
-                            Cost = Convert.ToDecimal(reader["Cost"]),
+                            BilledAmount = Convert.ToDecimal(reader["Cost"]),
                             Status = reader["Status"].ToString()
                         });
                 }

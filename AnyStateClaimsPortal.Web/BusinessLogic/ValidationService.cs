@@ -15,7 +15,7 @@ namespace AnyStateClaimsPortal.Web.BusinessLogic
                 errors.Add("Injury date cannot be in the future.");
             if (model.InjuryDate < DateTime.Today.AddYears(-1))
                 errors.Add("Injury date cannot be more than 1 year ago.");
-            if (string.IsNullOrWhiteSpace(model.Description) || model.Description.Trim().Length < 20)
+            if (string.IsNullOrWhiteSpace(model.InjuryDescription) || model.InjuryDescription.Trim().Length < 20)
                 errors.Add("Description must be at least 20 characters.");
             return errors;
         }
@@ -27,7 +27,7 @@ namespace AnyStateClaimsPortal.Web.BusinessLogic
                 errors.Add(string.Format("Cannot transition from '{0}' to '{1}'.", oldStatus, newStatus));
             if (_workflow.RequiresDenialReason(newStatus) && string.IsNullOrWhiteSpace(model.DenialReason))
                 errors.Add("A denial reason is required.");
-            if (_workflow.RequiresAdjusterAssignment(newStatus) && (model.AdjusterId == null || model.AdjusterId == 0))
+            if (_workflow.RequiresAdjusterAssignment(newStatus) && (model.AssignedAdjusterId == null || model.AssignedAdjusterId == 0))
                 errors.Add("An adjuster must be assigned for review.");
             return errors;
         }

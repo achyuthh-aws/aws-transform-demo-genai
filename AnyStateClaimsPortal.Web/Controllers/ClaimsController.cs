@@ -245,17 +245,17 @@ namespace AnyStateClaimsPortal.Web.Controllers
                 IsLitigated = c.IsLitigated,
                 ReturnToWorkDate = c.ReturnToWorkDate,
                 CreatedDate = c.CreatedDate,
-                EmployeeName = c.Employee?.FullName,
-                AgencyName = c.Employee?.Agency?.AgencyName,
-                AdjusterName = c.AssignedAdjuster?.FullName,
-                Notes = c.ClaimNotes?.OrderByDescending(n => n.CreatedDate).Select(n => new ClaimNoteViewModel
+                EmployeeName = c.Employee != null ? c.Employee.FullName : null,
+                AgencyName = (c.Employee != null && c.Employee.Agency != null) ? c.Employee.Agency.AgencyName : null,
+                AdjusterName = c.AssignedAdjuster != null ? c.AssignedAdjuster.FullName : null,
+                Notes = c.ClaimNotes != null ? c.ClaimNotes.OrderByDescending(n => n.CreatedDate).Select(n => new ClaimNoteViewModel
                 {
                     NoteText = n.NoteText,
                     NoteType = n.NoteType,
                     IsConfidential = n.IsConfidential,
                     CreatedBy = n.CreatedBy,
                     CreatedDate = n.CreatedDate
-                }).ToList()
+                }).ToList() : null
             };
         }
     }

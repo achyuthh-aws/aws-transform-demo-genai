@@ -35,7 +35,8 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     return View(model);
                 }
 
-                int maxAttempts = int.TryParse(ConfigurationManager.AppSettings["MaxLoginAttempts"], out int m) ? m : 5;
+                int m;
+                int maxAttempts = int.TryParse(ConfigurationManager.AppSettings["MaxLoginAttempts"], out m) ? m : 5;
                 if (user.IsLocked || user.FailedLoginAttempts >= maxAttempts)
                 {
                     ModelState.AddModelError("", "Account is locked. Contact an administrator.");

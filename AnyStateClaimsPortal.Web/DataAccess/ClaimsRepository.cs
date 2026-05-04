@@ -15,7 +15,8 @@ namespace AnyStateClaimsPortal.Web.DataAccess
         public ClaimsRepository()
         {
             _connectionString = ConfigurationManager.ConnectionStrings["AnyStateClaimsDB"].ConnectionString;
-            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out int t) ? t : 30;
+            int t;
+            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out t) ? t : 30;
         }
 
         public SearchClaimsResult SearchClaims(
@@ -81,7 +82,7 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                         dashboard.StatusSummaries.Add(new StatusSummary
                         {
                             Status = reader["Status"].ToString(),
-                            Count = Convert.ToInt32(reader["Count"])
+                            ClaimCount = Convert.ToInt32(reader["Count"])
                         });
 
                     if (reader.NextResult())
@@ -90,7 +91,7 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                             {
                                 ClaimId = Convert.ToInt32(reader["ClaimId"]),
                                 ClaimNumber = reader["ClaimNumber"].ToString(),
-                                ClaimantName = reader["ClaimantName"].ToString(),
+                                EmployeeName = reader["ClaimantName"].ToString(),
                                 Status = reader["Status"].ToString(),
                                 InjuryDate = Convert.ToDateTime(reader["InjuryDate"])
                             });
@@ -108,7 +109,7 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                         dashboard.TotalClaims = Convert.ToInt32(reader["TotalClaims"]);
 
                     if (reader.NextResult() && reader.Read())
-                        dashboard.TotalPaidAmount = Convert.ToDecimal(reader["TotalPaidAmount"]);
+                        dashboard.TotalPaid = Convert.ToDecimal(reader["TotalPaidAmount"]);
                 }
             }
 
@@ -143,14 +144,14 @@ namespace AnyStateClaimsPortal.Web.DataAccess
             {
                 ClaimId = Convert.ToInt32(reader["ClaimId"]),
                 ClaimNumber = reader["ClaimNumber"].ToString(),
-                ClaimantName = reader["ClaimantName"].ToString(),
+                EmployeeName = reader["ClaimantName"].ToString(),
                 Status = reader["Status"].ToString(),
                 InjuryDate = Convert.ToDateTime(reader["InjuryDate"]),
                 InjuryType = reader["InjuryType"].ToString(),
                 AgencyName = reader["AgencyName"].ToString(),
                 Priority = reader["Priority"].ToString(),
                 AdjusterName = reader["AdjusterName"] as string,
-                TotalPaid = reader["TotalPaid"] as decimal? ?? 0m
+                TotalPaidAmount = reader["TotalPaid"] as decimal? ?? 0m
             };
         }
     }

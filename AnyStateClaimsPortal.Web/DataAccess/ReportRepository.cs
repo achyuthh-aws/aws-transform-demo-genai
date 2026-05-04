@@ -15,7 +15,8 @@ namespace AnyStateClaimsPortal.Web.DataAccess
         public ReportRepository()
         {
             _connectionString = ConfigurationManager.ConnectionStrings["AnyStateClaimsDB"].ConnectionString;
-            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out int t) ? t : 30;
+            int t;
+            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out t) ? t : 30;
         }
 
         public List<AgencyReportItem> GetAgencyClaimsReport()
@@ -33,10 +34,10 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                         {
                             AgencyName = reader["AgencyName"].ToString(),
                             TotalClaims = Convert.ToInt32(reader["TotalClaims"]),
-                            OpenClaims = Convert.ToInt32(reader["OpenClaims"]),
-                            ClosedClaims = Convert.ToInt32(reader["ClosedClaims"]),
-                            TotalPaid = Convert.ToDecimal(reader["TotalPaid"]),
-                            AvgProcessingDays = Convert.ToDecimal(reader["AvgProcessingDays"])
+                            SubmittedCount = Convert.ToInt32(reader["OpenClaims"]),
+                            ClosedCount = Convert.ToInt32(reader["ClosedClaims"]),
+                            TotalPaidAmount = Convert.ToDecimal(reader["TotalPaid"]),
+                            LossRatio = Convert.ToDecimal(reader["AvgProcessingDays"])
                         });
             }
 
