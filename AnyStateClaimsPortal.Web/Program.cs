@@ -42,6 +42,7 @@ namespace AnyStateClaimsPortal.Web
             //      the HandleErrorAttribute is not needed in ASP.NET Core.
             // ----------------------------------------------------------------
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
 
             // ----------------------------------------------------------------
             // 3. Cookie Authentication
@@ -127,7 +128,7 @@ namespace AnyStateClaimsPortal.Web
             // ----------------------------------------------------------------
             // 9. HTTPS redirection
             // ----------------------------------------------------------------
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection(); // Disabled for HTTP-only demo
 
             // ----------------------------------------------------------------
             // 10. Static files
