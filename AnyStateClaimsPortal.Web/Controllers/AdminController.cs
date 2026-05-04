@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -12,17 +13,18 @@ namespace AnyStateClaimsPortal.Web.Controllers
     {
         public ActionResult Index()
         {
-            using (var db = new AnyStateClaimsContext())
+            try
             {
-                var users = db.Users.Include(u => u.Agency).ToList();
-                var auditLogs = db.AuditLogs.OrderByDescending(a => a.ChangedDate).Take(50).ToList();
-
-                var model = new AdminDashboardViewModel
+                using (var db = new AnyStateClaimsContext())
                 {
-                    TotalUsers = users.Count,
-                    ActiveUsers = users.Count(u => u.IsActive),
-                    LockedUsers = users.Count(u => u.IsLocked),
-                    Users = users.Select(u => new UserListItem
+                    var users = db.Users.Include("Agency").ToList();
+                    var auditLogs = db.AuditLogs.OrderByDescending(a => a.ChangedDate).Take(50).ToList();
+
+                    var model = new AdminDashboardViewModel();
+                    model.TotalUsers = users.Count;
+                    model.ActiveUsers = users.Count(u => u.IsActive);
+                    model.LockedUsers = users.Count(u => u.IsLocked);
+                    model.Users = users.Select(u => new UserListItem
                     {
                         UserId = u.UserId,
                         Username = u.Username,
@@ -33,8 +35,8 @@ namespace AnyStateClaimsPortal.Web.Controllers
                         IsActive = u.IsActive,
                         IsLocked = u.IsLocked,
                         LastLoginDate = u.LastLoginDate
-                    }).ToList(),
-                    RecentAudit = auditLogs.Select(a => new AuditLogItem
+                    }).ToList();
+                    model.RecentAudit = auditLogs.Select(a => new AuditLogItem
                     {
                         AuditId = (int)a.AuditId,
                         TableName = a.TableName,
@@ -45,10 +47,14 @@ namespace AnyStateClaimsPortal.Web.Controllers
                         NewValue = a.NewValue,
                         ChangedBy = a.ChangedBy,
                         ChangedDate = a.ChangedDate
-                    }).ToList()
-                };
+                    }).ToList();
 
-                return View(model);
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
             }
         }
 
@@ -56,26 +62,43 @@ namespace AnyStateClaimsPortal.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ToggleUserLock(int userId)
         {
-            using (var db = new AnyStateClaimsContext())
+            try
             {
-                var user = db.Users.Find(userId);
-                if (user != null)
+                using (var db = new AnyStateClaimsContext())
                 {
-                    user.IsLocked = !user.IsLocked;
-                    if (!user.IsLocked) user.FailedLoginAttempts = 0;
-                    db.SaveChanges();
+                    var user = db.Users.Find(userId);
+                    if (user != null)
+                    {
+                        user.IsLocked = !user.IsLocked;
+                        if (!user.IsLocked)
+                        {
+                            user.FailedLoginAttempts = 0;
+                        }
+                        db.SaveChanges();
+                    }
                 }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
+            }
         }
 
         [HttpGet]
         public ActionResult SystemConfig()
         {
-            using (var db = new AnyStateClaimsContext())
+            try
             {
-                var configs = db.SystemConfigurations.OrderBy(c => c.Category).ThenBy(c => c.ConfigKey).ToList();
-                return View(configs);
+                using (var db = new AnyStateClaimsContext())
+                {
+                    var configs = db.SystemConfigurations.OrderBy(c => c.Category).ThenBy(c => c.ConfigKey).ToList();
+                    return View(configs);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
             }
         }
 
@@ -83,18 +106,25 @@ namespace AnyStateClaimsPortal.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult UpdateConfig(int configId, string configValue)
         {
-            using (var db = new AnyStateClaimsContext())
+            try
             {
-                var config = db.SystemConfigurations.Find(configId);
-                if (config != null)
+                using (var db = new AnyStateClaimsContext())
                 {
-                    config.ConfigValue = configValue;
-                    config.ModifiedBy = User.Identity.Name;
-                    config.ModifiedDate = System.DateTime.Now;
-                    db.SaveChanges();
+                    var config = db.SystemConfigurations.Find(configId);
+                    if (config != null)
+                    {
+                        config.ConfigValue = configValue;
+                        config.ModifiedBy = User.Identity.Name;
+                        config.ModifiedDate = DateTime.Now;
+                        db.SaveChanges();
+                    }
                 }
+                return RedirectToAction("SystemConfig");
             }
-            return RedirectToAction("SystemConfig");
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
+            }
         }
     }
 }

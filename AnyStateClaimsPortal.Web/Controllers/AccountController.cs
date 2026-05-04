@@ -1,8 +1,5 @@
 using System;
-using System.Configuration;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Web.Mvc;
 using System.Web.Security;
 using AnyStateClaimsPortal.Web.Models;
@@ -16,64 +13,80 @@ namespace AnyStateClaimsPortal.Web.Controllers
         [HttpGet]
         public ActionResult Login(string returnUrl)
         {
-            return View(new LoginViewModel { ReturnUrl = returnUrl });
+            try
+            {
+                var model = new LoginViewModel();
+                model.ReturnUrl = returnUrl;
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            using (var db = new AnyStateClaimsContext())
+            try
             {
-                var user = db.Users.FirstOrDefault(u => u.Username == model.Username && u.IsActive);
-                if (user == null)
+                if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
                     return View(model);
                 }
 
-                int m;
-                int maxAttempts = int.TryParse(ConfigurationManager.AppSettings["MaxLoginAttempts"], out m) ? m : 5;
-                if (user.IsLocked || user.FailedLoginAttempts >= maxAttempts)
+                using (var db = new AnyStateClaimsContext())
                 {
-                    ModelState.AddModelError("", "Account is locked. Contact an administrator.");
-                    return View(model);
+                    var user = db.Users.FirstOrDefault(u => u.Username == model.Username && u.IsActive);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError("", "Invalid username or password.");
+                        return View(model);
+                    }
+
+                    if (user.IsLocked)
+                    {
+                        ModelState.AddModelError("", "Account is locked. Contact an administrator.");
+                        return View(model);
+                    }
+
+                    // Demo: accept any password
+                    FormsAuthentication.SetAuthCookie(user.Username, false);
+                    user.LastLoginDate = DateTime.Now;
+                    user.FailedLoginAttempts = 0;
+                    db.SaveChanges();
+
+                    Session["UserRole"] = user.Role;
+                    Session["UserFullName"] = user.FullName;
+                    Session["UserId"] = user.UserId;
+                    Session["UserAgencyId"] = user.AgencyId;
+
+                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+
+                    return RedirectToAction("Index", "Home");
                 }
-
-                // Demo: accept any password for seeded users
-                FormsAuthentication.SetAuthCookie(user.Username, false);
-                user.LastLoginDate = DateTime.Now;
-                user.FailedLoginAttempts = 0;
-                db.SaveChanges();
-
-                Session["UserRole"] = user.Role;
-                Session["UserFullName"] = user.FullName;
-                Session["UserId"] = user.UserId;
-                Session["UserAgencyId"] = user.AgencyId;
-
-                if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                    return Redirect(model.ReturnUrl);
-
-                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
             }
         }
 
         public ActionResult Logout()
         {
-            FormsAuthentication.SignOut();
-            Session.Clear();
-            return RedirectToAction("Login");
-        }
-
-        private string ComputeHash(string input)
-        {
-            using (var sha = SHA256.Create())
+            try
             {
-                var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
-                return Convert.ToBase64String(bytes);
+                Session.Clear();
+                FormsAuthentication.SignOut();
+                return RedirectToAction("Login");
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
             }
         }
     }

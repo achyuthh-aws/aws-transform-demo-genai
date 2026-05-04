@@ -1,41 +1,76 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using AnyStateClaimsPortal.Web.DataAccess;
 using AnyStateClaimsPortal.Web.Models;
 using AnyStateClaimsPortal.Web.Models.Entities;
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {
-    [Authorize(Roles = "Administrator,ClaimsAdjuster")]
+    [Authorize]
     public class PaymentsController : Controller
     {
         public ActionResult Index(int claimId)
         {
-            var repo = new PaymentRepository();
-            var payments = repo.GetPaymentsByClaimId(claimId);
-            ViewBag.ClaimId = claimId;
-            return View(payments);
+            try
+            {
+                using (var db = new AnyStateClaimsContext())
+                {
+                    var payments = db.ClaimPayments
+                        .Where(p => p.ClaimId == claimId)
+                        .OrderByDescending(p => p.PaymentDate)
+                        .ToList()
+                        .Select(p => new PaymentListItem
+                        {
+                            PaymentId = p.PaymentId,
+                            ClaimId = p.ClaimId,
+                            PaymentDate = p.PaymentDate,
+                            PaymentType = p.PaymentType,
+                            Amount = p.Amount,
+                            CheckNumber = p.CheckNumber,
+                            PayeeName = p.PayeeName,
+                            PayeeType = p.PayeeType,
+                            PaymentStatus = p.Status,
+                            FiscalYear = p.FiscalYear
+                        })
+                        .ToList();
+
+                    ViewBag.ClaimId = claimId;
+                    return View(payments);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
+            }
         }
 
         [HttpGet]
         public ActionResult Create(int claimId)
         {
-            using (var db = new AnyStateClaimsContext())
+            try
             {
-                var claim = db.Claims.Find(claimId);
-                if (claim == null) return HttpNotFound();
-
-                var model = new PaymentViewModel
+                using (var db = new AnyStateClaimsContext())
                 {
-                    ClaimId = claimId,
-                    ClaimNumber = claim.ClaimNumber,
-                    PaymentDate = DateTime.Today,
-                    FiscalYear = DateTime.Today.Year,
-                    PaymentTypes = new SelectList(new[] { "Medical", "Indemnity", "Legal", "Rehabilitation", "Other" }),
-                    PayeeTypes = new SelectList(new[] { "Employee", "Provider", "Attorney", "Vendor" })
-                };
-                return View(model);
+                    var claim = db.Claims.Find(claimId);
+                    if (claim == null)
+                    {
+                        return HttpNotFound();
+                    }
+
+                    var model = new PaymentViewModel();
+                    model.ClaimId = claimId;
+                    model.ClaimNumber = claim.ClaimNumber;
+                    model.PaymentDate = DateTime.Today;
+                    model.FiscalYear = DateTime.Today.Year;
+                    model.PaymentTypes = new SelectList(new[] { "Medical", "Indemnity", "Legal", "Rehabilitation", "Other" });
+                    model.PayeeTypes = new SelectList(new[] { "Employee", "Provider", "Attorney", "Vendor" });
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
             }
         }
 
@@ -43,44 +78,41 @@ namespace AnyStateClaimsPortal.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(PaymentViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                model.PaymentTypes = new SelectList(new[] { "Medical", "Indemnity", "Legal", "Rehabilitation", "Other" });
-                model.PayeeTypes = new SelectList(new[] { "Employee", "Provider", "Attorney", "Vendor" });
-                return View(model);
-            }
-
-            using (var db = new AnyStateClaimsContext())
-            {
-                db.ClaimPayments.Add(new ClaimPayment
+                if (!ModelState.IsValid)
                 {
-                    ClaimId = model.ClaimId,
-                    PaymentDate = model.PaymentDate,
-                    PaymentType = model.PaymentType,
-                    Amount = model.Amount,
-                    CheckNumber = model.CheckNumber,
-                    PayeeName = model.PayeeName,
-                    PayeeType = model.PayeeType,
-                    Description = model.Description,
-                    FiscalYear = model.FiscalYear,
-                    Status = "Pending",
-                    CreatedBy = User.Identity.Name,
-                    CreatedDate = DateTime.Now
-                });
-                db.SaveChanges();
+                    model.PaymentTypes = new SelectList(new[] { "Medical", "Indemnity", "Legal", "Rehabilitation", "Other" });
+                    model.PayeeTypes = new SelectList(new[] { "Employee", "Provider", "Attorney", "Vendor" });
+                    return View(model);
+                }
+
+                using (var db = new AnyStateClaimsContext())
+                {
+                    var payment = new ClaimPayment();
+                    payment.ClaimId = model.ClaimId;
+                    payment.PaymentDate = model.PaymentDate;
+                    payment.PaymentType = model.PaymentType;
+                    payment.Amount = model.Amount;
+                    payment.CheckNumber = model.CheckNumber;
+                    payment.PayeeName = model.PayeeName;
+                    payment.PayeeType = model.PayeeType;
+                    payment.Description = model.Description;
+                    payment.FiscalYear = model.FiscalYear;
+                    payment.Status = "Pending";
+                    payment.CreatedBy = User.Identity.Name;
+                    payment.CreatedDate = DateTime.Now;
+
+                    db.ClaimPayments.Add(payment);
+                    db.SaveChanges();
+                }
+
+                return RedirectToAction("Index", new { claimId = model.ClaimId });
             }
-
-            return RedirectToAction("Index", new { claimId = model.ClaimId });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ProcessBatch()
-        {
-            var repo = new PaymentRepository();
-            var result = repo.ProcessPaymentBatch(User.Identity.Name);
-            TempData["Success"] = string.Format("Processed {0} payments totaling {1:C}.", result.Count, result.Total);
-            return RedirectToAction("Index", "Home");
+            catch (Exception ex)
+            {
+                return Content("ERROR: " + ex.ToString());
+            }
         }
     }
 }
