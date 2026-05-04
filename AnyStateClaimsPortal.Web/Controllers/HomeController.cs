@@ -4,6 +4,7 @@ using AnyStateClaimsPortal.Web.DataAccess;
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public ActionResult Index()
@@ -16,13 +17,15 @@ namespace AnyStateClaimsPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                return Content("ERROR: " + ex.ToString());
+                ViewBag.ErrorMessage = ex.Message;
+                return View("Error");
             }
         }
 
+        [AllowAnonymous]
         public ActionResult Error()
         {
-            return Content("Error page reached");
+            return View();
         }
     }
 }
