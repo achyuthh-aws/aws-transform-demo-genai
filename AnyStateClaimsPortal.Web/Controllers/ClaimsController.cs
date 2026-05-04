@@ -83,7 +83,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     search.Agencies = new SelectList(db.Agencies.Where(a => a.IsActive).OrderBy(a => a.AgencyName).ToList(), "AgencyId", "AgencyName");
                     search.Statuses = new SelectList(new[] { "Submitted", "UnderReview", "MedicalReview", "Approved", "Denied", "Closed", "Reopened" });
                     search.InjuryTypes = new SelectList(new[] { "Medical", "Temporary", "Permanent", "Fatal" });
-                    search.Priorities = new SelectList(new[] { "Low", "Medium", "High", "Critical" });
+                    search.Priorities = new SelectList(new[] { "Low", "Normal", "High", "Urgent" });
                     search.Adjusters = new SelectList(db.Users.Where(u => u.IsActive && u.Role == "ClaimsAdjuster").OrderBy(u => u.FullName).ToList(), "UserId", "FullName");
                 }
 
@@ -140,7 +140,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
                         WitnessPhone = model.WitnessPhone,
                         WitnessStatement = model.WitnessStatement,
                         Status = "Submitted",
-                        Priority = model.Priority ?? "Medium",
+                        Priority = model.Priority ?? "Normal",
                         TotalPaidAmount = 0,
                         TotalMedicalCost = 0,
                         TotalReserveAmount = 0,
@@ -297,7 +297,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     db.Users.Where(u => u.IsActive && u.Role == "MedicalReviewer").OrderBy(u => u.FullName).ToList(),
                     "UserId", "FullName");
                 model.InjuryTypes = new SelectList(new[] { "Medical", "Temporary", "Permanent", "Fatal" });
-                model.Priorities = new SelectList(new[] { "Low", "Medium", "High", "Critical" });
+                model.Priorities = new SelectList(new[] { "Low", "Normal", "High", "Urgent" });
                 model.LocationTypes = new SelectList(new[] { "Office", "Field", "Warehouse", "Vehicle", "Other" });
             }
         }
