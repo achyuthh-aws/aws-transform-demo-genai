@@ -23,8 +23,6 @@
                     <li>@Html.ActionLink("Dashboard", "Index", "Home")</li>
                     <li>@Html.ActionLink("Claims", "Index", "Claims")</li>
                     <li>@Html.ActionLink("Reports", "Index", "Reports")</li>
-                    <li>@Html.ActionLink("Payments", "Index", "Payments")</li>
-                    <li>@Html.ActionLink("Medical", "Index", "Medical")</li>
                     @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Administrator")
                     {
                         <li>@Html.ActionLink("Admin", "Index", "Admin")</li>

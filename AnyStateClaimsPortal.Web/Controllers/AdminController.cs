@@ -8,13 +8,19 @@ using AnyStateClaimsPortal.Web.Models.Entities;
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public class AdminController : Controller
     {
+        private bool IsAdmin()
+        {
+            return Session["UserRole"] != null && Session["UserRole"].ToString() == "Administrator";
+        }
+
         public ActionResult Index()
         {
             try
             {
+                if (!IsAdmin()) { return RedirectToAction("Index", "Home"); }
                 using (var db = new AnyStateClaimsContext())
                 {
                     var users = db.Users.Include("Agency").ToList();

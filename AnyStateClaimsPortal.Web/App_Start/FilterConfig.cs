@@ -6,7 +6,7 @@ namespace AnyStateClaimsPortal.Web
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            // HandleErrorAttribute removed — controllers use try-catch with Content() for debugging
+            filters.Add(new HandleErrorAttribute());
         }
     }
 }

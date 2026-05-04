@@ -180,7 +180,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     }
 
                     var model = MapToViewModel(claim);
-                    ViewBag.AllowedStatuses = _workflow.GetAllowedTransitions(claim.Status);
+                    ViewBag.AllowedStatuses = new SelectList(_workflow.GetAllowedTransitions(claim.Status));
                     return View(model);
                 }
             }
@@ -210,7 +210,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
 
                     var model = MapToViewModel(claim);
                     PopulateDropdowns(model);
-                    ViewBag.AllowedStatuses = _workflow.GetAllowedTransitions(claim.Status);
+                    ViewBag.AllowedStatuses = new SelectList(_workflow.GetAllowedTransitions(claim.Status));
                     return View(model);
                 }
             }
@@ -242,7 +242,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     if (!ModelState.IsValid)
                     {
                         PopulateDropdowns(model);
-                        ViewBag.AllowedStatuses = _workflow.GetAllowedTransitions(claim.Status);
+                        ViewBag.AllowedStatuses = new SelectList(_workflow.GetAllowedTransitions(claim.Status));
                         return View(model);
                     }
 

@@ -4,8 +4,7 @@
 <h2>Payments</h2>
 
 <p>
-    <a href="@Url.Action("Create")" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Add Payment</a>
-    <a href="@Url.Action("ProcessBatch")" class="btn btn-warning"><span class="glyphicon glyphicon-cog"></span> Process Batch</a>
+    <a href="@Url.Action("Create", new { claimId = ViewBag.ClaimId })" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> Add Payment</a>
 </p>
 
 <div class="table-responsive">

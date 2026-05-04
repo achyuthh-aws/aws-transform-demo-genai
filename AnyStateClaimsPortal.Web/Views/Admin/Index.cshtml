@@ -45,7 +45,7 @@
                 <td class="text-center">@(u.IsLocked ? Html.Raw("<span class='glyphicon glyphicon-warning-sign text-danger'></span>") : Html.Raw(""))</td>
                 <td>@(u.LastLoginDate.HasValue ? u.LastLoginDate.Value.ToString("MM/dd/yyyy HH:mm") : "Never")</td>
                 <td>
-                    <a href="@Url.Action("ToggleLock", new { id = u.UserId })" class="btn btn-xs @(u.IsLocked ? "btn-success" : "btn-warning")">
+                    <a href="@Url.Action("ToggleUserLock", new { userId = u.UserId })" class="btn btn-xs @(u.IsLocked ? "btn-success" : "btn-warning")">
                         @(u.IsLocked ? "Unlock" : "Lock")
                     </a>
                 </td>
