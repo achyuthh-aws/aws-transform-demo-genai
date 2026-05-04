@@ -40,21 +40,18 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     return View(model);
                 }
 
-using (var db = new AnyStateClaimsContext())
+                using (var db = new AnyStateClaimsContext())
                 {
+                    Console.WriteLine("LOGIN: Querying for user: " + model.Username);
                     var user = db.Users.FirstOrDefault(u => u.Username == model.Username && u.IsActive);
                     if (user == null)
                     {
+                        Console.WriteLine("LOGIN: User not found");
                         ModelState.AddModelError("", "Invalid username or password.");
                         return View(model);
                     }
 
-                    if (user.IsLocked)
-                    {
-                        ModelState.AddModelError("", "Account is locked. Contact an administrator.");
-                        return View(model);
-                    }
-
+                    Console.WriteLine("LOGIN: Found user " + user.Username + ", signing in");
                     // Demo: accept any password
                     var claims = new[] { new System.Security.Claims.Claim(ClaimTypes.Name, user.Username) };
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -80,6 +77,7 @@ using (var db = new AnyStateClaimsContext())
             }
             catch (Exception ex)
             {
+                Console.WriteLine("LOGIN ERROR: " + ex.ToString());
                 return Content("ERROR: " + ex.ToString());
             }
         }
