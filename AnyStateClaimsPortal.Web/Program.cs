@@ -60,6 +60,8 @@ namespace AnyStateClaimsPortal.Web
                     options.AccessDeniedPath   = "/Account/Login";
                 });
 
+            builder.Services.AddAuthorization();
+
             // ----------------------------------------------------------------
             // 4. Session
             //    Session_Start in Global.asax.cs was empty; basic session
