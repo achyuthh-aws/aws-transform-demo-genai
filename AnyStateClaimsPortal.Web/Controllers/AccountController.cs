@@ -36,6 +36,9 @@ namespace AnyStateClaimsPortal.Web.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    foreach (var e in ModelState)
+                        foreach (var err in e.Value.Errors)
+                            Console.WriteLine("LOGIN VALIDATION: " + e.Key + " = " + err.ErrorMessage);
                     return View(model);
                 }
 
