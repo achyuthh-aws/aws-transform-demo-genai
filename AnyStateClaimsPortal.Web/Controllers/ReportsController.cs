@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web.Mvc;
 using AnyStateClaimsPortal.Web.Models;
 using AnyStateClaimsPortal.Web.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {

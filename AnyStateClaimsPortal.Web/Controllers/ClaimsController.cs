@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web.Mvc;
 using AnyStateClaimsPortal.Web.BusinessLogic;
 using AnyStateClaimsPortal.Web.Models;
 using AnyStateClaimsPortal.Web.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {
@@ -176,7 +179,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
 
                     if (claim == null)
                     {
-                        return HttpNotFound();
+                        return NotFound();
                     }
 
                     var model = MapToViewModel(claim);
@@ -205,7 +208,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
 
                     if (claim == null)
                     {
-                        return HttpNotFound();
+                        return NotFound();
                     }
 
                     var model = MapToViewModel(claim);
@@ -231,7 +234,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     var claim = db.Claims.Find(id);
                     if (claim == null)
                     {
-                        return HttpNotFound();
+                        return NotFound();
                     }
 
                     if (claim.Status != model.Status && !_workflow.CanTransition(claim.Status, model.Status))

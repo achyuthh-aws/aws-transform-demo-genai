@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
 using AnyStateClaimsPortal.Web.Models;
+using Microsoft.Data.SqlClient;
+
 
 namespace AnyStateClaimsPortal.Web.DataAccess
 {
@@ -14,9 +15,9 @@ namespace AnyStateClaimsPortal.Web.DataAccess
 
         public ClaimsRepository()
         {
-            _connectionString = ConfigurationManager.ConnectionStrings["AnyStateClaimsDB"].ConnectionString;
+            _connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["AnyStateClaimsDB"]?.ConnectionString ?? string.Empty;
             int t;
-            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out t) ? t : 30;
+            _commandTimeout = int.TryParse(System.Configuration.ConfigurationManager.AppSettings["CommandTimeout"], out t) ? t : 30;
         }
 
         public SearchClaimsResult SearchClaims(

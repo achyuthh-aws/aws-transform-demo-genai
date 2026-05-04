@@ -1,8 +1,12 @@
-@if (Session["UserFullName"] != null)
+@using Microsoft.AspNetCore.Http
+@{
+    var httpContext = ViewContext.HttpContext;
+}
+@if (httpContext.Session?.GetString("UserFullName") != null)
 {
     <ul class="nav navbar-nav navbar-right">
         <li><p class="navbar-text">
-            <span class="glyphicon glyphicon-user"></span> @Session["UserFullName"] (@Session["UserRole"])
+            <span class="glyphicon glyphicon-user"></span> @httpContext.Session?.GetString("UserFullName") (@httpContext.Session?.GetString("UserRole"))
         </p></li>
         <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
     </ul>

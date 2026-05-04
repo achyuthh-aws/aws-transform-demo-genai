@@ -1,9 +1,13 @@
 using System;
 using System.Linq;
-using System.Web.Mvc;
-using System.Web.Security;
+using System.Security.Claims;
 using AnyStateClaimsPortal.Web.Models;
 using AnyStateClaimsPortal.Web.Models.Entities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {
@@ -36,7 +40,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     return View(model);
                 }
 
-                using (var db = new AnyStateClaimsContext())
+using (var db = new AnyStateClaimsContext())
                 {
                     var user = db.Users.FirstOrDefault(u => u.Username == model.Username && u.IsActive);
                     if (user == null)
@@ -52,15 +56,19 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     }
 
                     // Demo: accept any password
-                    FormsAuthentication.SetAuthCookie(user.Username, false);
+                    var claims = new[] { new System.Security.Claims.Claim(ClaimTypes.Name, user.Username) };
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal).GetAwaiter().GetResult();
+
                     user.LastLoginDate = DateTime.Now;
                     user.FailedLoginAttempts = 0;
                     db.SaveChanges();
 
-                    Session["UserRole"] = user.Role;
-                    Session["UserFullName"] = user.FullName;
-                    Session["UserId"] = user.UserId;
-                    Session["UserAgencyId"] = user.AgencyId;
+                    HttpContext.Session.SetString("UserRole", user.Role ?? string.Empty);
+                    HttpContext.Session.SetString("UserFullName", user.FullName ?? string.Empty);
+                    HttpContext.Session.SetString("UserId", user.UserId.ToString());
+                    HttpContext.Session.SetString("UserAgencyId", user.AgencyId != null ? user.AgencyId.ToString() : string.Empty);
 
                     if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                     {
@@ -80,8 +88,8 @@ namespace AnyStateClaimsPortal.Web.Controllers
         {
             try
             {
-                Session.Clear();
-                FormsAuthentication.SignOut();
+                HttpContext.Session.Clear();
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).GetAwaiter().GetResult();
                 return RedirectToAction("Login");
             }
             catch (Exception ex)

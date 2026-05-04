@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
 using AnyStateClaimsPortal.Web.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+
 
 namespace AnyStateClaimsPortal.Web.DataAccess
 {
@@ -12,11 +14,11 @@ namespace AnyStateClaimsPortal.Web.DataAccess
         private readonly string _connectionString;
         private readonly int _commandTimeout;
 
-        public PaymentRepository()
+        public PaymentRepository(IConfiguration configuration)
         {
-            _connectionString = ConfigurationManager.ConnectionStrings["AnyStateClaimsDB"].ConnectionString;
+            _connectionString = configuration.GetConnectionString("AnyStateClaimsDB") ?? string.Empty;
             int t;
-            _commandTimeout = int.TryParse(ConfigurationManager.AppSettings["CommandTimeout"], out t) ? t : 30;
+            _commandTimeout = int.TryParse(configuration["AppSettings:CommandTimeout"], out t) ? t : 30;
         }
 
         public List<PaymentListItem> GetPaymentsByClaimId(int claimId)

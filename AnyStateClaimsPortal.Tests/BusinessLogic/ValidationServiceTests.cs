@@ -2,6 +2,8 @@ using System;
 using NUnit.Framework;
 using AnyStateClaimsPortal.Web.BusinessLogic;
 using AnyStateClaimsPortal.Web.Models;
+using NUnit.Framework.Legacy;
+
 
 namespace AnyStateClaimsPortal.Tests.BusinessLogic
 {
@@ -45,7 +47,7 @@ namespace AnyStateClaimsPortal.Tests.BusinessLogic
         {
             var model = new ClaimViewModel { InjuryDate = DateTime.Today, InjuryDescription = "This is a valid description with enough characters" };
             var errors = _service.ValidateClaimSubmission(model);
-            Assert.IsEmpty(errors);
+            ClassicAssert.IsEmpty(errors);
         }
 
         [Test]
@@ -85,7 +87,7 @@ namespace AnyStateClaimsPortal.Tests.BusinessLogic
         {
             var model = new PaymentViewModel { Amount = 500 };
             var errors = _service.ValidatePayment(model);
-            Assert.IsEmpty(errors);
+            ClassicAssert.IsEmpty(errors);
         }
     }
 }

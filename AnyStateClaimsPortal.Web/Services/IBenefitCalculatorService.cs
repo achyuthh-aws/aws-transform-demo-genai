@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.ServiceModel;
+using CoreWCF;
 
 namespace AnyStateClaimsPortal.Web.Services
 {

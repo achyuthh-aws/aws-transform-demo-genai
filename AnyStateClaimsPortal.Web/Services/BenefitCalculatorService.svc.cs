@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.ServiceModel;
-using System.ServiceModel.Activation;
+
 using AnyStateClaimsPortal.Web.BusinessLogic;
 using AnyStateClaimsPortal.Web.DataAccess;
 
 namespace AnyStateClaimsPortal.Web.Services
 {
-    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     public class BenefitCalculatorService : IBenefitCalculatorService
     {
         private readonly ClaimsRepository _claimsRepo = new ClaimsRepository();
@@ -39,7 +38,7 @@ namespace AnyStateClaimsPortal.Web.Services
         public decimal GetStateAverageWeeklyWage()
         {
             decimal wage;
-            return decimal.TryParse(ConfigurationManager.AppSettings["StateAvgWeeklyWage"], out wage)
+            return decimal.TryParse(System.Configuration.ConfigurationManager.AppSettings["StateAvgWeeklyWage"], out wage)
                 ? wage
                 : 1025.00m;
         }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web.Mvc;
 using AnyStateClaimsPortal.Web.Models;
 using AnyStateClaimsPortal.Web.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace AnyStateClaimsPortal.Web.Controllers
 {
@@ -13,7 +15,7 @@ namespace AnyStateClaimsPortal.Web.Controllers
     {
         private bool IsAdmin()
         {
-            return Session["UserRole"] != null && Session["UserRole"].ToString() == "Administrator";
+            return HttpContext.Session.GetString("UserRole") != null && HttpContext.Session.GetString("UserRole") == "Administrator";
         }
 
         public ActionResult Index()
