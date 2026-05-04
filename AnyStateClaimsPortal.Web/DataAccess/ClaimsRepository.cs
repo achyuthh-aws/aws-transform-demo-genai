@@ -78,38 +78,49 @@ namespace AnyStateClaimsPortal.Web.DataAccess
 
                 using (var reader = cmd.ExecuteReader())
                 {
+                    // Result Set 1: Status summary (Status, ClaimCount, TotalWeeklyBenefits, TotalPaid, TotalReserves)
                     while (reader.Read())
-                        dashboard.StatusSummaries.Add(new StatusSummary
+                    {
+                        var s = new StatusSummary
                         {
                             Status = reader["Status"].ToString(),
-                            ClaimCount = Convert.ToInt32(reader["Count"])
-                        });
+                            ClaimCount = Convert.ToInt32(reader["ClaimCount"]),
+                            TotalWeeklyBenefits = Convert.ToDecimal(reader["TotalWeeklyBenefits"]),
+                            TotalPaid = Convert.ToDecimal(reader["TotalPaid"])
+                        };
+                        dashboard.StatusSummaries.Add(s);
+                        dashboard.TotalClaims += s.ClaimCount;
+                        dashboard.TotalPaid += s.TotalPaid;
+                    }
 
+                    // Result Set 2: Recent claims
                     if (reader.NextResult())
                         while (reader.Read())
                             dashboard.RecentClaims.Add(new RecentClaimViewModel
                             {
                                 ClaimId = Convert.ToInt32(reader["ClaimId"]),
                                 ClaimNumber = reader["ClaimNumber"].ToString(),
-                                EmployeeName = reader["ClaimantName"].ToString(),
+                                InjuryDate = Convert.ToDateTime(reader["InjuryDate"]),
+                                InjuryType = reader["InjuryType"].ToString(),
                                 Status = reader["Status"].ToString(),
-                                InjuryDate = Convert.ToDateTime(reader["InjuryDate"])
+                                Priority = reader["Priority"].ToString(),
+                                EmployeeName = reader["EmployeeName"].ToString(),
+                                AgencyName = reader["AgencyName"].ToString(),
+                                CreatedDate = Convert.ToDateTime(reader["CreatedDate"])
                             });
 
+                    // Result Set 3: Agency summary
                     if (reader.NextResult())
                         while (reader.Read())
                             dashboard.AgencySummaries.Add(new AgencySummary
                             {
                                 AgencyName = reader["AgencyName"].ToString(),
+                                AgencyCode = reader["AgencyCode"].ToString(),
+                                RiskCategory = reader["RiskCategory"].ToString(),
                                 ClaimCount = Convert.ToInt32(reader["ClaimCount"]),
-                                TotalPaid = Convert.ToDecimal(reader["TotalPaid"])
+                                TotalPaid = Convert.ToDecimal(reader["TotalPaid"]),
+                                TotalMedical = Convert.ToDecimal(reader["TotalMedical"])
                             });
-
-                    if (reader.NextResult() && reader.Read())
-                        dashboard.TotalClaims = Convert.ToInt32(reader["TotalClaims"]);
-
-                    if (reader.NextResult() && reader.Read())
-                        dashboard.TotalPaid = Convert.ToDecimal(reader["TotalPaidAmount"]);
                 }
             }
 
