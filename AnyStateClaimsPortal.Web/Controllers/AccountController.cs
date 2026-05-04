@@ -30,7 +30,6 @@ namespace AnyStateClaimsPortal.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginViewModel model)
         {
             try

@@ -141,6 +141,14 @@ namespace AnyStateClaimsPortal.Web
             // ----------------------------------------------------------------
             app.UseStaticFiles();
 
+            // Request logging
+            app.Use(async (context, next) =>
+            {
+                Console.WriteLine($"REQUEST: {context.Request.Method} {context.Request.Path}");
+                await next();
+                Console.WriteLine($"RESPONSE: {context.Response.StatusCode} for {context.Request.Method} {context.Request.Path}");
+            });
+
             // ----------------------------------------------------------------
             // 11. Routing
             //     Must appear before UseAuthentication / UseAuthorization.
