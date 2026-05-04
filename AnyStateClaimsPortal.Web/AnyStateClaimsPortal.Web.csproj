@@ -13,6 +13,11 @@
     <Compile Remove="Global.asax.cs"></Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Update="app.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CoreWCF.Primitives" Version="0.1.0"></PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7"></PackageReference>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0"></PackageReference>
