@@ -72,6 +72,39 @@ namespace AnyStateClaimsPortal.Web.Models
         public string AgingBucket { get; set; }
         public int ClaimCount { get; set; }
         public decimal TotalPaid { get; set; }
-        public decimal TotalReserves { get; set; }
+        public decimal TotalReserved { get; set; }
+    }
+
+    public class FinancialSummaryViewModel
+    {
+        public decimal TotalPaid { get; set; }
+        public decimal TotalReserved { get; set; }
+        public int ClaimCount { get; set; }
+        public List<MonthlyFinancial> MonthlyBreakdown { get; set; }
+        public List<InjuryTypeFinancial> ByInjuryType { get; set; }
+    }
+
+    public class MonthlyFinancial
+    {
+        public string Month { get; set; }
+        public decimal Amount { get; set; }
+    }
+
+    public class InjuryTypeFinancial
+    {
+        public string InjuryType { get; set; }
+        public decimal TotalPaid { get; set; }
+        public int ClaimCount { get; set; }
+    }
+
+    public class BenefitResult
+    {
+        public decimal WeeklyBenefit { get; set; }
+        public decimal BenefitRate { get; set; }
+        public decimal DependentSupplement { get; set; }
+        public decimal LongevityBonus { get; set; }
+        public decimal MaxBenefit { get; set; }
+        public decimal MinBenefit { get; set; }
+        public decimal StateAvgWeekly { get; set; }
     }
 }
