@@ -25,7 +25,8 @@ namespace AnyStateClaimsPortal.Web.DataAccess
             int? adjusterId, bool? isLitigated, int pageNumber, int pageSize)
         {
             var claims = new List<ClaimListItemViewModel>();
-            int totalCount = 0;
+            if (pageNumber < 1) pageNumber = 1;
+            if (pageSize < 1) pageSize = 25;
 
             using (var conn = new SqlConnection(_connectionString))
             using (var cmd = new SqlCommand("usp_SearchClaims", conn))
@@ -43,21 +44,23 @@ namespace AnyStateClaimsPortal.Web.DataAccess
                 cmd.Parameters.AddWithValue("@IsLitigated", (object)isLitigated ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@PageNumber", pageNumber);
                 cmd.Parameters.AddWithValue("@PageSize", pageSize);
+                cmd.Parameters.AddWithValue("@SortColumn", "CreatedDate");
+                cmd.Parameters.AddWithValue("@SortDirection", "DESC");
+                var totalParam = new SqlParameter("@TotalCount", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                cmd.Parameters.Add(totalParam);
 
                 conn.Open();
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                         claims.Add(MapClaimListItem(reader));
-                    if (reader.NextResult() && reader.Read())
-                        totalCount = reader.GetInt32(0);
                 }
-            }
 
-            var result = new SearchClaimsResult();
-            result.Claims = claims;
-            result.TotalCount = totalCount;
-            return result;
+                var result = new SearchClaimsResult();
+                result.Claims = claims;
+                result.TotalCount = totalParam.Value != DBNull.Value ? Convert.ToInt32(totalParam.Value) : 0;
+                return result;
+            }
         }
 
         public DashboardViewModel GetDashboardData()
@@ -155,14 +158,21 @@ namespace AnyStateClaimsPortal.Web.DataAccess
             {
                 ClaimId = Convert.ToInt32(reader["ClaimId"]),
                 ClaimNumber = reader["ClaimNumber"].ToString(),
-                EmployeeName = reader["ClaimantName"].ToString(),
+                EmployeeName = reader["EmployeeName"].ToString(),
+                EmployeeNumber = reader["EmployeeNumber"].ToString(),
                 Status = reader["Status"].ToString(),
                 InjuryDate = Convert.ToDateTime(reader["InjuryDate"]),
                 InjuryType = reader["InjuryType"].ToString(),
+                BodyPartAffected = reader["BodyPartAffected"].ToString(),
                 AgencyName = reader["AgencyName"].ToString(),
+                AgencyCode = reader["AgencyCode"].ToString(),
                 Priority = reader["Priority"].ToString(),
                 AdjusterName = reader["AdjusterName"] as string,
-                TotalPaidAmount = reader["TotalPaid"] as decimal? ?? 0m
+                WeeklyBenefitAmount = reader["WeeklyBenefitAmount"] as decimal?,
+                TotalPaidAmount = reader["TotalPaidAmount"] as decimal? ?? 0m,
+                TotalMedicalCost = reader["TotalMedicalCost"] as decimal? ?? 0m,
+                IsLitigated = Convert.ToBoolean(reader["IsLitigated"]),
+                CreatedDate = Convert.ToDateTime(reader["CreatedDate"])
             };
         }
     }
