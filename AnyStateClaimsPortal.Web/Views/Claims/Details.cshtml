@@ -22,12 +22,12 @@
                 <tr><th>Witness</th><td>@Model.WitnessName @(Model.WitnessPhone != null ? "(" + Model.WitnessPhone + ")" : "")</td></tr>
                 <tr><th>Adjuster</th><td>@(Model.AdjusterName ?? "Unassigned")</td></tr>
                 <tr><th>Medical Reviewer</th><td>@(Model.MedicalReviewerId.HasValue ? Model.MedicalReviewerId.ToString() : "Unassigned")</td></tr>
-                <tr><th>Weekly Benefit</th><td>@(Model.WeeklyBenefitAmount?.ToString("C") ?? "—")</td></tr>
-                <tr><th>Total Paid</th><td>@(Model.TotalPaidAmount?.ToString("C") ?? "—")</td></tr>
-                <tr><th>Total Medical</th><td>@(Model.TotalMedicalCost?.ToString("C") ?? "—")</td></tr>
-                <tr><th>Total Reserve</th><td>@(Model.TotalReserveAmount?.ToString("C") ?? "—")</td></tr>
+                <tr><th>Weekly Benefit</th><td>@(Model.WeeklyBenefitAmount.HasValue ? Model.WeeklyBenefitAmount.Value.ToString("C") : "—")</td></tr>
+                <tr><th>Total Paid</th><td>@(Model.TotalPaidAmount.HasValue ? Model.TotalPaidAmount.Value.ToString("C") : "—")</td></tr>
+                <tr><th>Total Medical</th><td>@(Model.TotalMedicalCost.HasValue ? Model.TotalMedicalCost.Value.ToString("C") : "—")</td></tr>
+                <tr><th>Total Reserve</th><td>@(Model.TotalReserveAmount.HasValue ? Model.TotalReserveAmount.Value.ToString("C") : "—")</td></tr>
                 <tr><th>Litigated</th><td>@(Model.IsLitigated ? "Yes" : "No")</td></tr>
-                <tr><th>Return to Work Date</th><td>@(Model.ReturnToWorkDate?.ToString("MM/dd/yyyy") ?? "—")</td></tr>
+                <tr><th>Return to Work Date</th><td>@(Model.ReturnToWorkDate.HasValue ? Model.ReturnToWorkDate.Value.ToString("MM/dd/yyyy") : "—")</td></tr>
             </table>
             @if (!string.IsNullOrEmpty(Model.DenialReason))
             {

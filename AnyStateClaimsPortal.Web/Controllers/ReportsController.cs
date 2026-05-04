@@ -59,6 +59,10 @@ namespace AnyStateClaimsPortal.Web.Controllers
                     var model = new ReportViewModel();
                     model.AgencyReports = agencyReports;
                     model.FiscalYear = DateTime.Today.Year;
+                    model.FiscalYears = new SelectList(new[] { DateTime.Today.Year, DateTime.Today.Year - 1, DateTime.Today.Year - 2 });
+                    model.Agencies = new SelectList(db.Agencies.Where(a => a.IsActive).OrderBy(a => a.AgencyName).ToList(), "AgencyId", "AgencyName");
+                    model.FinancialSummaries = new List<FinancialSummaryItem>();
+                    model.AgingBuckets = new List<AgingBucketItem>();
 
                     return View(model);
                 }

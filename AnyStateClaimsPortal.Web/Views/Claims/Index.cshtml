@@ -42,9 +42,9 @@
                             <td>@item.InjuryType</td>
                             <td><span class="label label-@(item.Priority == "High" ? "danger" : item.Priority == "Medium" ? "warning" : "default")">@item.Priority</span></td>
                             <td><span class="label label-@(item.Status == "Approved" ? "success" : item.Status == "Denied" ? "danger" : item.Status == "Under Review" ? "warning" : "info")">@item.Status</span></td>
-                            <td>@(item.WeeklyBenefitAmount?.ToString("C") ?? "—")</td>
-                            <td>@(item.TotalPaidAmount?.ToString("C") ?? "—")</td>
-                            <td>@(item.TotalMedicalCost?.ToString("C") ?? "—")</td>
+                            <td>@(item.WeeklyBenefitAmount.HasValue ? item.WeeklyBenefitAmount.Value.ToString("C") : "—")</td>
+                            <td>@(item.TotalPaidAmount.HasValue ? item.TotalPaidAmount.Value.ToString("C") : "—")</td>
+                            <td>@(item.TotalMedicalCost.HasValue ? item.TotalMedicalCost.Value.ToString("C") : "—")</td>
                             <td>@Html.ActionLink("Edit", "Edit", new { id = item.ClaimId }, new { @class = "btn btn-xs btn-default" })</td>
                         </tr>
                     }
